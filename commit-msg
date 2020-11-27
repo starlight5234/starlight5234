@@ -61,3 +61,21 @@ if ! mv "${dest}" "$1" ; then
   echo "cannot mv ${dest} to $1"
   exit 1
 fi
+
+NAME=$(git config user.name)
+EMAIL=$(git config user.email)
+
+if [ -z "$NAME" ]; then
+    echo "empty git config user.name"
+    exit 1
+fi
+
+if [ -z "$EMAIL" ]; then
+    echo "empty git config user.email"
+    exit 1
+fi
+
+if ! git -c trailer.ifexists=addIfDifferentNeighbor interpret-trailers \
+      --trailer "Signed-off-by: $NAME <$EMAIL>" --in-place $1 ; then
+  exit 1
+fi
